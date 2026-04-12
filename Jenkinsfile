@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_USER = 'your-dockerhub-username'
+        DOCKERHUB_USER = 'gk740'
         ORDER_IMAGE    = "${DOCKERHUB_USER}/order-api"
         INV_IMAGE      = "${DOCKERHUB_USER}/inventory-service"
     }

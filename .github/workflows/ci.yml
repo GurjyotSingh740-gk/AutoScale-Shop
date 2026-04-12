@@ -15,8 +15,8 @@ jobs:
       - name: 2 — Run Unit Tests
         run: |
           pip install flask
-          python -c "from order_api.app import app; print('Order API import OK')" || true
-          python -c "from inventory_service.app import app; print('Inventory import OK')" || true
+          python -c "from order-api.app import app; print('Order API import OK')" || true
+          python -c "from inventory-service.app import app; print('Inventory import OK')" || true
 
       - name: 3 — Build Order API Image
         run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/order-api:${{ github.sha }} ./order-api
