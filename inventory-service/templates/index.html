@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>AutoScale Shop - Inventory</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f0fff4;
+            padding: 30px;
+        }
+
+        h1 {
+            color: #27ae60;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 60%;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+
+        th {
+            background: #27ae60;
+            color: white;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 400px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        input,
+        button {
+            padding: 10px;
+            margin: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            background: #27ae60;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>📦 AutoScale Shop — Inventory Service</h1>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Item</th>
+            <th>Stock</th>
+        </tr>
+        {% for i in inventory %}
+        <tr>
+            <td>{{ i.id }}</td>
+            <td>{{ i.item }}</td>
+            <td>{{ i.stock }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <div class="card">
+        <h3>Restock Item</h3>
+        <input type="number" id="rid" placeholder="Item ID">
+        <input type="number" id="rqty" placeholder="Qty to add" value="10">
+        <button onclick="restock()">Restock</button>
+        <p id="msg"></p>
+    </div>
+    <script>
+        async function restock() {
+            const id = parseInt(document.getElementById('rid').value);
+            const qty = parseInt(document.getElementById('rqty').value);
+            await fetch('/restock', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, qty }) });
+            document.getElementById('msg').innerText = '✅ Restocked!';
+            location.reload();
+        }
+    </script>
+</body>
+
+</html>

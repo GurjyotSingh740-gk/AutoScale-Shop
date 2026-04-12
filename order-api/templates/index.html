@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>AutoScale Shop - Order API</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f0f4ff;
+            padding: 30px;
+        }
+
+        h1 {
+            color: #2c3e50;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 500px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        input,
+        button {
+            padding: 10px;
+            margin: 5px 0;
+            width: 100%;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            background: #3498db;
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+
+        button:hover {
+            background: #2980b9;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background: #3498db;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🛒 AutoScale Shop — Order Service</h1>
+    <div class="card">
+        <h3>Place a New Order</h3>
+        <input type="text" id="item" placeholder="Item Name (e.g. Laptop)">
+        <input type="number" id="qty" placeholder="Quantity" value="1">
+        <button onclick="placeOrder()">Place Order</button>
+        <p id="msg"></p>
+    </div>
+    <h3>📦 Current Orders</h3>
+    <table>
+        <tr>
+            <th>Order ID</th>
+            <th>Item</th>
+            <th>Qty</th>
+        </tr>
+        {% for o in orders %}
+        <tr>
+            <td>{{ o.id }}</td>
+            <td>{{ o.item }}</td>
+            <td>{{ o.qty }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <script>
+        async function placeOrder() {
+            const item = document.getElementById('item').value;
+            const qty = document.getElementById('qty').value;
+            const res = await fetch('/order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ item, qty: parseInt(qty) })
+            });
+            const data = await res.json();
+            document.getElementById('msg').innerText = `✅ ${data.status} — Order ID: ${data.order.id}`;
+            location.reload();
+        }
+    </script>
+</body>
+
+</html>

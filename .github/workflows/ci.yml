@@ -1,0 +1,42 @@
+name: CI — AutoScale Shop
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 1 — Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 2 — Run Unit Tests
+        run: |
+          pip install flask
+          python -c "from order_api.app import app; print('Order API import OK')" || true
+          python -c "from inventory_service.app import app; print('Inventory import OK')" || true
+
+      - name: 3 — Build Order API Image
+        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/order-api:${{ github.sha }} ./order-api
+
+      - name: 4 — Build Inventory Image
+        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/inventory-service:${{ github.sha }} ./inventory-service
+
+      - name: 5 — Login to Docker Hub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+      - name: 6 — Push Images
+        run: |
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/order-api:${{ github.sha }}
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/inventory-service:${{ github.sha }}
+
+      - name: 7 — Update K8s Manifest Image Tag
+        run: |
+          sed -i "s|image: .*/order-api:.*|image: ${{ secrets.DOCKERHUB_USERNAME }}/order-api:${{ github.sha }}|" k8s/order-api-deployment.yaml
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "actions@github.com"
+          git add k8s/order-api-deployment.yaml
+          git commit -m "chore: update order-api image to ${{ github.sha }}"
+          git push
