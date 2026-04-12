@@ -2,6 +2,14 @@ from flask import Flask, request, jsonify, render_template
 import time, random
 
 app = Flask(__name__)
+metrics = PrometheusMetrics(app)  # ← This one line adds /metrics endpoint
+
+# Custom metric — order counter
+orders_placed = metrics.counter(
+    'orders_placed_total',
+    'Total number of orders placed'
+)
+
 orders = []
 
 @app.route('/')
